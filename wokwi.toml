@@ -1,5 +1,0 @@
-# Diz ao Wokwi onde esta o firmware compilado pelo PlatformIO
-[wokwi]
-version = 1
-firmware = '.pio/build/esp32dev/firmware.bin'
-elf = '.pio/build/esp32dev/firmware.elf'

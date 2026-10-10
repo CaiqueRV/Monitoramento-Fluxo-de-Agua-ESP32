@@ -1,280 +1,88 @@
-# Sistema de Monitoramento de Fluxo de Água com ESP32
+# Monitoramento de Fluxo de Água com ESP32 — Sensor de rios
 
-![Compilação](https://github.com/Tidxlz/Monitoramento-Fluxo-de--gua-ESP32/actions/workflows/build.yml/badge.svg)
+![Compilação](https://github.com/CaiqueRV/Monitoramento-Fluxo-de-Agua-ESP32/actions/workflows/build.yml/badge.svg)
 
-Protótipo que mede quanta água está passando por um cano usando um **ESP32**, um sensor de fluxo **YF-S201**, um display **OLED SSD1306** e um **LED de alerta**. O projeto é desenvolvido com **PlatformIO** e simulado no **[Wokwi](https://wokwi.com)**.
+Protótipo de monitoramento hidrológico com **ESP32** para o projeto AquaScan (rios de Petrópolis). O sensor mede o
+**nível do rio** (ultrassônico JSN-SR04M-2) e a **vazão** (YF-S201), mostra os dados em um **display OLED SSD1306** e
+sinaliza o estado com **LEDs** (verde = normal, amarelo = atenção, vermelho = perigo).
 
-<!-- Quando tiver um GIF ou print da simulação, salve em docs/imagens/ e remova os marcadores de comentário:
-![Simulação no Wokwi](docs/imagens/simulacao.gif)
--->
-
-<!-- Link público do projeto no Wokwi:
-**Simulação online:** https://wokwi.com/projects/SEU_ID_AQUI
--->
-
-> **Status:** em validação. O código e a documentação da primeira versão estão prontos, mas ainda não foram testados na simulação. Cada etapa abaixo só é marcada como concluída depois de verificada.
-
----
-
-## Status do desenvolvimento
-
-| Etapa | Objetivo | Situação |
-|---|---|---|
-| 1 | Estrutura do repositório, código e documentação | Concluída |
-| 2 | Compilar o firmware com o PlatformIO | Concluída |
-| 3 | Simular no Wokwi: OLED, LED e geração de pulsos | Concluída |
-| 4 | Validar o cálculo de vazão e o alerta em toda a faixa do potenciômetro | A fazer |
-
-Os resultados de cada teste ficam registrados em [docs/validacao.md](docs/validacao.md). Ao concluir a etapa 4, o projeto recebe sua primeira versão, a **v0.1.0**. O histórico de mudanças está no [CHANGELOG.md](CHANGELOG.md).
-
----
-
-## A ideia em uma frase
-
-> A água faz girar uma pequena hélice dentro do sensor. Cada volta gera pulsos elétricos. O ESP32 conta esses pulsos, calcula a vazão e mostra o resultado na tela. Se a vazão passar de um limite, o LED acende.
-
-Esse é o mesmo princípio de qualquer sistema de monitoramento:
-
-```
-Fenômeno físico → Sensor → Sinal elétrico → Processamento → Informação
-   (água)       (YF-S201)    (pulsos)         (ESP32)      (OLED + LED)
-```
-
----
-
-## Como funciona
-
-### 1. O sensor transforma água em pulsos
-
-O YF-S201 tem um rotor interno. Quando a água passa, o rotor gira e o sensor envia um pulso elétrico a cada fração de volta:
-
-```
-____|‾‾|____|‾‾|____|‾‾|____|‾‾|____
-```
-
-O ESP32 **não recebe** "a vazão é 4 L/min". Ele recebe apenas pulsos, algo como "chegaram 30 pulsos neste segundo". Todo o resto é cálculo.
-
-### 2. A regra é simples: mais água, mais pulsos
-
-| Situação | Rotor | Pulsos por segundo | Vazão calculada |
-|---|---|---|---|
-| Pouca água | Gira devagar | Poucos | Baixa |
-| Muita água | Gira rápido | Muitos | Alta |
-
-### 3. O ESP32 faz as contas
-
-```mermaid
-flowchart TD
-    A[Água passa pelo YF-S201] --> B[Rotor gira e gera pulsos]
-    B --> C[GPIO27 detecta cada pulso]
-    C --> D[Interrupção: pulses++]
-    D --> E{Passou 1 segundo?}
-    E -- Não --> D
-    E -- Sim --> F[Copia e zera o contador]
-    F --> G[Frequência = pulsos / tempo]
-    G --> H[Vazão = frequência / 7,5]
-    H --> I{Vazão > 5 L/min?}
-    I -- Sim --> J[LED aceso]
-    I -- Não --> K[LED apagado]
-    J --> L[Atualiza o OLED]
-    K --> L
-    L --> E
-```
-
-### 4. A matemática
-
-| Grandeza | O que é | Unidade | Como é obtida |
-|---|---|---|---|
-| **Pulsos** | O que o sensor entrega | pulsos | Contados pela interrupção |
-| **Frequência** | Pulsos por segundo | Hz | `pulsos ÷ tempo` |
-| **Vazão** | Volume de água por minuto | L/min | `frequência ÷ 7,5` |
-
-**Exemplo:** 30 pulsos em 1 segundo → 30 Hz → 30 ÷ 7,5 = **4 L/min**
-
-> **Importante:** o valor **7,5** é uma referência comum para o YF-S201, não uma constante exata. Cada sensor físico deve ser calibrado (veja [docs/calibracao.md](docs/calibracao.md)).
-
----
-
-## Componentes
-
-| Componente | Função no projeto |
-|---|---|
-| ESP32 DevKit | O "cérebro": conta pulsos, calcula e controla tudo |
-| Sensor YF-S201 | Transforma o fluxo de água em pulsos elétricos |
-| OLED SSD1306 0,96" (I2C) | Mostra pulsos, frequência e vazão |
-| LED + resistor 220 Ω | Alerta visual quando a vazão passa do limite |
-| Protoboard e jumpers | Montagem sem solda |
-| Cabo USB | Alimentação e programação |
-
-Lista completa, com especificações e itens da montagem física: [hardware/lista-de-materiais.md](hardware/lista-de-materiais.md).
-
----
-
-## Ligações
-
-| Componente | Pino do componente | ESP32 |
-|---|---|---|
-| OLED | VCC | 3V3 |
-| OLED | GND | GND |
-| OLED | SDA | GPIO 21 |
-| OLED | SCL | GPIO 22 |
-| YF-S201 | Sinal (amarelo) | GPIO 27 |
-| LED | Ânodo (via resistor 220 Ω) | GPIO 25 |
-| LED | Cátodo | GND |
-
-**Apenas na simulação (Wokwi):**
-
-| Componente | Ligação | Função |
-|---|---|---|
-| Fio de jumper | GPIO 26 → GPIO 27 | Leva os pulsos simulados até a entrada do sensor |
-| Potenciômetro | SIG → GPIO 34, VCC → 3V3, GND → GND | Funciona como uma "torneira" virtual |
-
-> **Atenção na montagem física:** o YF-S201 é alimentado com **5 V** e seu sinal pode chegar a 5 V, mas os GPIOs do ESP32 suportam apenas **3,3 V**. Use um divisor de tensão no fio de sinal (esquema em [hardware/lista-de-materiais.md](hardware/lista-de-materiais.md)).
-
----
-
-## Simulação
-
-O Wokwi não possui o sensor YF-S201. Como o ESP32 só precisa enxergar **pulsos**, o próprio ESP32 gera esses pulsos no GPIO 26, e um fio os leva até o GPIO 27. Para o programa, é como se o sensor real estivesse conectado.
-
-```
-Montagem real:    YF-S201 ──────────────→ GPIO27 → interrupção → contador
-Simulação:        Potenciômetro → GPIO26 → GPIO27 → interrupção → contador
-```
-
-Girando o potenciômetro, a frequência varia de 0 a 75 Hz, o que equivale a uma vazão de 0 a 10 L/min:
-
-| Posição do potenciômetro | Frequência | Vazão | LED |
-|---|---|---|---|
-| Mínimo | 0 Hz | 0 L/min | Apagado |
-| Metade | ~37 Hz | ~5 L/min | Limite |
-| Máximo | 75 Hz | 10 L/min | Aceso |
-
-Para alternar entre simulação e sensor real, basta mudar uma linha em `include/config.h`:
-
-```cpp
-#define MODO_SIMULACAO 1   // 1 = Wokwi | 0 = sensor real
-```
-
-### O que aparece no display
-
-```
-MONITOR DE FLUXO
-
-Pulsos: 30
-Freq.: 30.0 Hz
-Vazao: 4.00 L/min
-
-Alerta: nao
-```
-
----
-
-## Como rodar
-
-### Opção 1: VS Code (recomendado)
-
-Pré-requisitos: [VS Code](https://code.visualstudio.com) com as extensões **PlatformIO IDE** e **Wokwi Simulator**.
-
-1. Clone o repositório e abra a pasta no VS Code.
-2. Ative a licença do Wokwi: pressione `F1` e escolha **Wokwi: Request a New License**.
-3. Compile: clique no ícone de visto na barra inferior ou use `Ctrl+Alt+B`. A primeira compilação demora alguns minutos.
-4. Simule: pressione `F1` e escolha **Wokwi: Start Simulator**.
-5. Gire o potenciômetro e acompanhe o display e o LED.
-
-> Sempre que alterar o código, compile de novo antes de simular. O Wokwi executa o último firmware compilado.
-
-### Opção 2: Wokwi no navegador
-
-1. Crie um novo projeto **ESP32** em [wokwi.com](https://wokwi.com).
-2. Copie `src/main.cpp` para a aba **sketch.ino**.
-3. Crie uma aba chamada **config.h** e copie `include/config.h`.
-4. Copie `diagram.json` para a aba **diagram.json**.
-5. Adicione as bibliotecas **Adafruit GFX Library** e **Adafruit SSD1306** pelo Library Manager.
-6. Clique no botão verde de iniciar.
-
-> **Dica:** a mensagem *"Build Servers Busy"* não é erro no projeto. É fila nos servidores gratuitos do Wokwi. Nesse caso, prefira a opção 1.
-
----
-
-## Estrutura do código
-
-| Parte | O que faz |
-|---|---|
-| `countPulse()` | Função de interrupção: soma 1 ao contador a cada pulso |
-| `setup()` | Roda uma vez: configura pinos, OLED e interrupção |
-| `loop()` | Roda sempre: a cada 1 s calcula a vazão, atualiza o LED e o display |
-| `atualizaDisplay()` | Escreve pulsos, frequência, vazão e alerta no OLED |
-| `atualizaSimulacao()` | Só no Wokwi: lê o potenciômetro e ajusta os pulsos gerados |
-
-**Por que usar interrupção?** Em vez de o ESP32 ficar perguntando o tempo todo "chegou pulso?", o próprio hardware avisa quando um pulso chega. Assim nenhum pulso se perde, mesmo enquanto o display está sendo atualizado.
-
-**Por que `millis()` e não `delay()`?** O `delay()` congela o programa. Com `millis()`, o ESP32 apenas verifica se já passou 1 segundo e continua livre para fazer outras tarefas.
-
-O raciocínio completo por trás de cada escolha está em [docs/decisoes.md](docs/decisoes.md).
-
-### Parâmetros ajustáveis (`include/config.h`)
-
-```cpp
-const float FATOR_CALIBRACAO = 7.5;      // Hz por L/min
-const float LIMITE_VAZAO     = 5.0;      // L/min para acender o LED
-const unsigned long INTERVALO_MS = 1000; // intervalo de medição
-```
-
----
-
-## Limitações atuais
-
-Estas limitações são conhecidas e fazem parte da evolução planejada:
-
-- **Não mede nível de rio.** O YF-S201 mede apenas a água que passa por dentro dele, não a altura da água.
-- **Não prevê transbordamento.** Para isso seria preciso medir o nível e sua velocidade de subida.
-- **Vazão não é velocidade.** Vazão é volume por tempo (L/min). Velocidade é distância por tempo (m/s). Elas se relacionam por `Q = A × v`, onde A é a área da seção.
-- **Um cano não representa um rio.** Um rio tem seção muito maior e velocidades diferentes em cada ponto.
-- **Protoboard é só para protótipo.** Uma instalação real exige solda, caixa vedada e proteção contra umidade.
-
----
-
-## Roadmap
-
-Cada etapa concluída vira uma versão marcada no repositório. O histórico detalhado está no [CHANGELOG.md](CHANGELOG.md).
-
-- [ ] **v0.1.0**: medição de vazão, OLED, LED de alerta e simulação no Wokwi (em validação)
-- [ ] **v0.2.0**: modo de calibração e calibração do sensor físico
-- [ ] **v0.3.0**: cálculo de volume acumulado
-- [ ] **v0.4.0**: sensor de nível (ultrassônico HC-SR04)
-- [ ] **v0.5.0**: estimativa de tempo até o transbordamento
-- [ ] **v0.6.0**: registro de dados e envio via Wi-Fi
-- [ ] **v1.0.0**: montagem física completa com o sensor real
-
----
+![Diagrama das conexões na protoboard](projeto-fisico-sensor-rios/diagrama/diagrama-protoboard.png)
 
 ## Estrutura do repositório
 
-```
-├── README.md                  ← você está aqui
-├── CHANGELOG.md               ← mudanças de cada versão
-├── LICENSE                    ← licença MIT
-├── platformio.ini             ← configuração do PlatformIO
-├── wokwi.toml                 ← configuração do Wokwi para VS Code
-├── diagram.json               ← circuito da simulação
-├── src/
-│   └── main.cpp               ← lógica principal
-├── include/
-│   └── config.h               ← pinos e parâmetros
-├── docs/
-│   ├── documentacao-completa.md
-│   ├── decisoes.md            ← por que cada escolha foi feita
-│   ├── calibracao.md          ← procedimento de calibração
-│   ├── validacao.md           ← resultados dos testes de cada etapa
-│   ├── imagens/               ← prints, GIFs e fotos
-│   └── apresentacao/          ← slides do trabalho
-├── hardware/
-│   └── lista-de-materiais.md
-├── dados/
-│   └── calibracao/            ← medições dos ensaios
-└── .github/workflows/
-    └── build.yml              ← compilação automática
+| Pasta / arquivo | Conteúdo |
+|---|---|
+| [`projeto-fisico-sensor-rios/`](projeto-fisico-sensor-rios/) | Firmware do sensor físico (PlatformIO) e [diagrama da protoboard](projeto-fisico-sensor-rios/diagrama/conexoes-protoboard.md) |
+| [`simulacao-wokwi/`](simulacao-wokwi/) | Simulação no Wokwi: `sketch.ino`, `diagram.json`, `libraries.txt` |
+| [`modelo-calibracao/`](modelo-calibracao/) | Análise dos cálculos de nível e vazão e script Python que os reproduz |
+| [`hardware/`](hardware/lista-de-materiais.md) | Lista de materiais e ligações de pinos |
+| [`dados/calibracao/`](dados/calibracao/modelo-calibracao.csv) | Planilha para registrar os ensaios de calibração |
+| [`docs/`](docs/) | Documentação do protótipo anterior (v0.1.0, somente vazão) |
+| [`CHANGELOG.md`](CHANGELOG.md) | Histórico de mudanças |
+| `.github/workflows/build.yml` | Compilação automática do firmware físico |
+
+## Como cada medida é calculada
+
+| Medida | Sensor | Cálculo (firmware físico) |
+|---|---|---|
+| Distância | JSN-SR04M-2 | `duração do eco (µs) × 0,0343 / 2` (cm) |
+| Nível | JSN-SR04M-2 | `(30 − distância) / (30 − 20) × 100` (%), limitado a 0–100 |
+| Vazão | YF-S201 | `(pulsos em 2 s / 450) × 30` (L/min) |
+| Status | — | < 33 % NORMAL · 33–66 % ATENÇÃO · > 66 % PERIGO |
+
+Detalhes, tabelas, pontos de atenção e procedimento de calibração:
+[`modelo-calibracao/analise-calculos-sensores.md`](modelo-calibracao/analise-calculos-sensores.md).
+
+## Projeto físico
+
+* Placa: ESP32 DevKit V1 (`esp32dev`), framework Arduino, monitor serial a 115200 baud.
+* Bibliotecas: Adafruit GFX Library e Adafruit SSD1306 (instaladas pelo PlatformIO).
+
+```bash
+cd projeto-fisico-sensor-rios
+pio run                # compilar
+pio run -t upload      # gravar no ESP32
+pio device monitor     # monitor serial
 ```
 
----
+| Função | GPIO no firmware |
+|---|:--:|
+| OLED SDA / SCL | 23 / 22 |
+| JSN-SR04M-2 trigger / eco | 2 / 4 |
+| YF-S201 (pulsos) | 5 |
+| LED verde / amarelo / vermelho | 18 / 19 / 21 |
+
+Os pinos conferem com a montagem na protoboard; a verificação é feita por
+[`verificar_conexoes.py`](projeto-fisico-sensor-rios/diagrama/verificar_conexoes.py).
+
+## Simulação Wokwi
+
+Projeto online: <https://wokwi.com/projects/476706772789091329>
+
+Na simulação, o HC-SR04 representa o JSN-SR04M-2 e um botão representa os pulsos do YF-S201. Os parâmetros diferem
+do físico (referência de 100 cm para o nível e janela de 10 s para a vazão); a comparação está na
+[seção 7 da análise de cálculos](modelo-calibracao/analise-calculos-sensores.md#7-diferenças-em-relação-à-simulação-wokwi).
+
+Ligações da simulação e equivalência com o hardware real: [`simulacao-wokwi/README.md`](simulacao-wokwi/README.md).
+
+## Materiais
+
+ESP32 DEVKIT V1, protoboard de 400 pontos, sensor de vazão YF-S201, sensor ultrassônico JSN-SR04M-2, display OLED
+SSD1306 de 0,96" I2C, LED vermelho, LED amarelo, LED verde, 5 resistores de 1 kΩ, 2 resistores de 2,2 kΩ e 11 jumpers.
+Lista completa: [`hardware/lista-de-materiais.md`](hardware/lista-de-materiais.md).
+
+## Documentação do protótipo anterior (v0.1.0)
+
+A pasta [`docs/`](docs/) descreve o primeiro protótipo, que media apenas a vazão (YF-S201 + OLED + um LED, simulado com
+potenciômetro no GPIO27). Esses documentos ainda **não foram atualizados** para o sensor de rios e podem citar pinos e
+arquivos que não existem mais na raiz:
+
+* [`docs/readme-v0.1.0-fluxo.md`](docs/readme-v0.1.0-fluxo.md): README anterior, arquivado
+* [`docs/documentacao-completa.md`](docs/documentacao-completa.md), [`docs/decisoes.md`](docs/decisoes.md),
+  [`docs/calibracao.md`](docs/calibracao.md), [`docs/validacao.md`](docs/validacao.md)
+
+## Limitações atuais
+
+* O nível usa uma faixa de apenas 10 cm (1 cm = 10 %), o que limita a resolução; veja os pontos de atenção na análise de cálculos.
+* O sistema ainda não prevê transbordamento nem envia dados pela rede.
+* A protoboard é só para protótipo: uma instalação real exige solda, caixa vedada e proteção contra umidade.

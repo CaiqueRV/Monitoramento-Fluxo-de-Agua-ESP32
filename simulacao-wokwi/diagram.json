@@ -1,0 +1,110 @@
+{
+  "version": 1,
+  "author": "syafier",
+  "editor": "wokwi",
+  "parts": [
+    {
+      "type": "wokwi-breadboard-half",
+      "id": "bb1",
+      "top": 5.7,
+      "left": 60.9,
+      "rotate": 90,
+      "attrs": {}
+    },
+    { "type": "board-esp32-devkit-c-v4", "id": "esp", "top": -57.6, "left": 273.64, "attrs": {} },
+    { "type": "wokwi-led", "id": "led1", "top": 6, "left": -34.6, "attrs": { "color": "red" } },
+    {
+      "type": "wokwi-led",
+      "id": "led2",
+      "top": 63.6,
+      "left": -34.6,
+      "attrs": { "color": "yellow" }
+    },
+    {
+      "type": "wokwi-led",
+      "id": "led3",
+      "top": 121.2,
+      "left": -34.6,
+      "attrs": { "color": "limegreen" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r1",
+      "top": 42.35,
+      "left": 9.6,
+      "attrs": { "value": "1000" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r2",
+      "top": 109.55,
+      "left": 9.6,
+      "attrs": { "value": "1000" }
+    },
+    {
+      "type": "wokwi-resistor",
+      "id": "r3",
+      "top": 167.15,
+      "left": 9.6,
+      "attrs": { "value": "1000" }
+    },
+    {
+      "type": "board-ssd1306",
+      "id": "oled1",
+      "top": 281.54,
+      "left": 211.43,
+      "attrs": { "i2cAddress": "0x3c" }
+    },
+    { "type": "wokwi-hc-sr04", "id": "ultrasonic1", "top": -209.7, "left": 139.9, "attrs": {} },
+    {
+      "type": "wokwi-pushbutton",
+      "id": "btn1",
+      "top": -195.4,
+      "left": 422.4,
+      "attrs": { "color": "yellow", "xray": "1" }
+    }
+  ],
+  "connections": [
+    [ "esp:TX", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX", "$serialMonitor:TX", "", [] ],
+    [ "led1:A", "r1:1", "red", [ "v9.6" ] ],
+    [ "led2:A", "r2:1", "yellow", [ "v0" ] ],
+    [ "led3:A", "r3:1", "green", [ "v9.6" ] ],
+    [ "r1:2", "bb1:9t.b", "red", [ "h200.4" ] ],
+    [ "r2:2", "bb1:10t.b", "red", [ "v0" ] ],
+    [ "r3:2", "bb1:11t.b", "red", [ "h8.4", "v-96" ] ],
+    [ "oled1:VCC", "bb1:1t.b", "green", [ "h-76.65", "v-316.8" ] ],
+    [ "oled1:SCL", "esp:22", "green", [ "v-9.6", "h125.1", "v-288" ] ],
+    [ "oled1:SDA", "esp:21", "green", [ "h134.47", "v-268.8" ] ],
+    [ "oled1:GND", "bb1:14t.e", "green", [ "v-9.6", "h-48", "v-182.4" ] ],
+    [ "led1:C", "bb1:14t.b", "blue", [ "h-18.8", "v153.6", "h307.2" ] ],
+    [ "led2:C", "bb1:14t.c", "blue", [ "h-9.2", "v86.4", "h288" ] ],
+    [ "led3:C", "bb1:14t.d", "blue", [ "v19.2", "h269.2" ] ],
+    [ "ultrasonic1:VCC", "bb1:19t.e", "cyan", [ "v0" ] ],
+    [ "ultrasonic1:TRIG", "bb1:7t.e", "cyan", [ "v0" ] ],
+    [ "ultrasonic1:ECHO", "bb1:5t.e", "cyan", [ "v0" ] ],
+    [ "ultrasonic1:GND", "esp:GND.2", "cyan", [ "h152.4", "v86.4" ] ],
+    [ "btn1:1.l", "bb1:8t.e", "gold", [ "h-163.2", "v220.8" ] ],
+    [ "esp:12", "bb1:13t.a", "", [ "$bb" ] ],
+    [ "esp:13", "bb1:15t.a", "", [ "$bb" ] ],
+    [ "esp:14", "bb1:12t.a", "", [ "$bb" ] ],
+    [ "esp:25", "bb1:9t.a", "", [ "$bb" ] ],
+    [ "esp:26", "bb1:10t.a", "", [ "$bb" ] ],
+    [ "esp:27", "bb1:11t.a", "", [ "$bb" ] ],
+    [ "esp:32", "bb1:7t.a", "", [ "$bb" ] ],
+    [ "esp:33", "bb1:8t.a", "", [ "$bb" ] ],
+    [ "esp:34", "bb1:5t.a", "", [ "$bb" ] ],
+    [ "esp:35", "bb1:6t.a", "", [ "$bb" ] ],
+    [ "esp:3V3", "bb1:1t.a", "", [ "$bb" ] ],
+    [ "esp:EN", "bb1:2t.a", "", [ "$bb" ] ],
+    [ "esp:VP", "bb1:3t.a", "", [ "$bb" ] ],
+    [ "esp:VN", "bb1:4t.a", "", [ "$bb" ] ],
+    [ "esp:GND.1", "bb1:14t.a", "", [ "$bb" ] ],
+    [ "esp:D2", "bb1:16t.a", "", [ "$bb" ] ],
+    [ "esp:D3", "bb1:17t.a", "", [ "$bb" ] ],
+    [ "esp:CMD", "bb1:18t.a", "", [ "$bb" ] ],
+    [ "esp:5V", "bb1:19t.a", "", [ "$bb" ] ],
+    [ "esp:GND.3", "btn1:2.l", "gold", [ "h0" ] ]
+  ],
+  "dependencies": {}
+}

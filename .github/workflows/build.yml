@@ -33,4 +33,4 @@ jobs:
         run: pip install --upgrade platformio
 
       - name: Compilar o firmware
-        run: pio run
+        run: pio run -d projeto-fisico-sensor-rios
