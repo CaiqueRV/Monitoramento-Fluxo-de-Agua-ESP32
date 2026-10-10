@@ -157,13 +157,9 @@ for c in (9, 10, 11):
     dot(x, ROW["C"], "#555", 3.5); dot(x, ROW["H"], "#555", 3.5)
 text(X(11) + 18, 326, "1 kΩ × 3", 10, anchor="start", weight="bold", halo=True)
 # 2,2 kΩ  C6→−  e  C13→−
-line([(X(6), ROW["C"]), (X(6), 556), (X(7), 576), (X(7), NEG_Y)], "#8a8a8a", 2, halo=False)
-resistor_body(X(6), 528, 90, "2k2", "")
-dot(X(6), ROW["C"], "#555", 3.5); dot(X(7), NEG_Y, "#1f5fbf", 3.5)
 line([(X(13), ROW["C"]), (X(13), NEG_Y)], "#8a8a8a", 2, halo=False)
 resistor_body(X(13), 548, 90, "2k2", "")
 dot(X(13), ROW["C"], "#555", 3.5); dot(X(13), NEG_Y, "#1f5fbf", 3.5)
-text(X(6) - 20, 558, "2,2 kΩ", 10, anchor="end", weight="bold", halo=True)
 text(X(13) + 18, 556, "2,2 kΩ", 10, anchor="start", weight="bold", halo=True)
 
 # --------------------------------------------------------------------------- jumpers
@@ -197,6 +193,14 @@ jmp([hx("B22"), (X(21) + 13, ROW["B"]), (X(21) + 13, POS_Y), (X(21), POS_Y)], C_
 # VIN -> trilho +
 jmp([vin, (22, vin[1]), (22, POS_Y), (X(1), POS_Y)], C_5V, "VIN", "POS")
 
+# 2,2 kΩ  E6 -> G1 (pull-up do sinal do YF-S201 ao 3V3), por cima dos fios
+e6, g1 = hx("E6"), hx("G1")
+line([e6, g1], "#8a8a8a", 2.2, halo=True)
+ang = math.degrees(math.atan2(g1[1] - e6[1], g1[0] - e6[0])) + 180
+resistor_body((e6[0] + g1[0]) / 2, (e6[1] + g1[1]) / 2, ang, "2k2", "")
+dot(*e6, "#7b1fa2", 4.2); dot(*g1, "#ef7d00", 3.5)
+text((e6[0] + g1[0]) / 2 + 20, (e6[1] + g1[1]) / 2 - 12, "2,2 kΩ", 10, anchor="start", weight="bold", halo=True)
+
 # rótulos curtos nos jumpers
 text(X(1) - 2, 300, "", 8)
 
@@ -224,7 +228,7 @@ def note(x, y, lines_, color="#444", anchor="start", size=10):
     for i, s in enumerate(lines_):
         text(x, y + i * 13, s, size, anchor=anchor, fill=color, halo=True)
 
-note(86, ROW["B"] - 2, ["divisor YF-S201:", "→ GPIO5 (≈ 3,4 V)"], "#7b1fa2")
+note(86, ROW["B"] - 2, ["YF-S201: 1 kΩ em série +", "pull-up 2,2 kΩ ao 3V3 → GPIO5"], "#7b1fa2")
 note(X(14) + 4, ROW["C"] + 12, ["divisor eco JSN:", "→ GPIO4 (≈ 3,4 V)"], "#00838f")
 note(X(16), ROW["F"] - 4 + 0, [], "#444")
 
@@ -232,7 +236,7 @@ note(X(16), ROW["F"] - 4 + 0, [], "#444")
 add(f'<rect x="370" y="735" width="570" height="118" rx="8" fill="#ecf8ee" stroke="#2e7d32" stroke-width="1.8"/>')
 text(386, 757, "✓ Montagem conferida com o firmware (src/main.cpp)", 13, anchor="start", weight="bold", fill="#1b5e20")
 for i, s in enumerate([
-    "• YF-S201 → divisor → GPIO5 (FLUXO_PIN 5), jumper I8 → E6.",
+    "• YF-S201 → 1 kΩ → GPIO5 (FLUXO_PIN 5, I8 → E6) · pull-up 2,2 kΩ ao 3V3 (E6–G1).",
     "• JSN-SR04M-2: trigger GPIO2 (I4 → B23) · eco → divisor → GPIO4 (I5 → E13).",
     "• OLED I2C: SDA GPIO23 (I15 → F25) · SCL GPIO22 (I14 → F26) · VDD 3V3.",
     "• LEDs via 1 kΩ: GPIO18, GPIO19 e GPIO21.",
@@ -249,7 +253,7 @@ for i, (col, nm) in enumerate(items):
     x = 60 + (i % 5) * 180; y = ly + 22 + (i // 5) * 22
     add(f'<rect x="{x}" y="{y - 9}" width="26" height="6" rx="3" fill="{col}" stroke="#222" stroke-width=".6"/>')
     text(x + 34, y - 2, nm, 11, anchor="start")
-text(60, ly + 76, "Resistores: 5 × 1 kΩ (D2–D6, C9–H9, C10–H10, C11–H11, D13–D24) e 2 × 2,2 kΩ (C6 e C13 ao trilho −). "
+text(60, ly + 76, "Resistores: 5 × 1 kΩ (D2–D6, C9–H9, C10–H10, C11–H11, D13–D24) e 2 × 2,2 kΩ (E6–G1, pull-up ao 3V3; C13 ao trilho −). "
      "LEDs: catodo no trilho −, anodo em A9, A10 e A11.", 10, anchor="start", fill="#555")
 text(60, ly + 92, "Alimentação: VIN do ESP32 (5 V do USB) → trilho +. O OLED usa 3V3 (I1 → F27).", 10, anchor="start", fill="#555")
 

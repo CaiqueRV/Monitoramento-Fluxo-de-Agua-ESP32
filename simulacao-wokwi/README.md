@@ -38,7 +38,7 @@ Conferidas contra os pinos do `sketch.ino` (todas coincidem).
 | Protoboard de 400 pontos | Meia protoboard (`wokwi-breadboard-half`) |
 | JSN-SR04M-2 | HC-SR04 |
 | YF-S201 | Botão |
-| Divisores de tensão 1 kΩ + 2,2 kΩ | Não usados: no Wokwi não há risco de 5 V nas entradas |
+| Divisor do eco e pull-up do YF-S201 (1 kΩ + 2,2 kΩ) | Não usados: o botão já vai ao GND com `INPUT_PULLUP`, e no Wokwi não há 5 V nas entradas |
 
 Os pinos da simulação são diferentes dos do projeto físico (veja [`../hardware/lista-de-materiais.md`](../hardware/lista-de-materiais.md)).
 

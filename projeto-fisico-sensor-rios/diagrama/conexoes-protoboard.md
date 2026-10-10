@@ -29,7 +29,7 @@ Arquivos: [`diagrama-protoboard.svg`](diagrama-protoboard.svg) (vetorial) ·
 |---|---|---|
 | I1 → F27 | 3V3 → OLED VDD | Alimenta o display com 3,3 V |
 | I2 → trilho − | GND do ESP32 → trilho − | Referência de terra |
-| I8 → E6 | GPIO5 → ponto central do divisor do YF-S201 | Entrada do sinal de vazão |
+| I8 → E6 | GPIO5 → nó do sinal do YF-S201 (coluna 6) | Entrada do sinal de vazão |
 | I4 → B23 | GPIO2 → RX do JSN-SR04M-2 | Trigger do ultrassônico |
 | I5 → E13 | GPIO4 → ponto central do divisor do eco | Leitura do eco do ultrassônico |
 | I14 → F26 | GPIO22 → SCK do OLED | I2C SCL |
@@ -43,22 +43,43 @@ Arquivos: [`diagrama-protoboard.svg`](diagrama-protoboard.svg) (vetorial) ·
 
 | Resistor | Entre | Função |
 |---|---|---|
-| 1 kΩ | D2 e D6 | Em série no sinal do YF-S201 (parte de cima do divisor) |
-| 2,2 kΩ | C6 e trilho − | Parte de baixo do divisor do YF-S201 |
+| 1 kΩ | D2 e D6 | Em série no sinal do YF-S201 |
+| 2,2 kΩ | E6 e G1 | Pull-up do sinal do YF-S201 ao 3V3 (G1 está na coluna 1, a mesma do pino 3V3) |
 | 1 kΩ | D13 e D24 | Em série no eco (TX) do JSN-SR04M-2 (parte de cima do divisor) |
 | 2,2 kΩ | C13 e trilho − | Parte de baixo do divisor do eco |
 | 1 kΩ | C9 e H9 | LED 1 → GPIO18 |
 | 1 kΩ | C10 e H10 | LED 2 → GPIO19 |
 | 1 kΩ | C11 e H11 | LED 3 → GPIO21 |
 
-**Divisores de tensão.** O sinal do YF-S201 (amarelo, E2 → D2) e o eco do JSN-SR04M-2 (A24 → D24) saem em 5 V.
-Cada um passa por 1 kΩ em série e 2,2 kΩ para o terra, e o ESP32 lê no ponto central:
+**Sinal do YF-S201: pull-up ao 3V3.** O fio amarelo (E2) passa pelo 1 kΩ (D2–D6) até a coluna 6, onde estão o GPIO5
+(jumper `I8 → E6`) e o 2,2 kΩ que sobe até o 3V3 (`E6 → G1`). É a ligação indicada quando a saída do sensor é em
+**coletor aberto**, isto é, o sensor só puxa a linha para o GND e o nível alto vem do pull-up. Com o 2,2 kΩ para o terra,
+como estava antes, uma saída desse tipo deixaria a linha sempre em nível baixo.
+
+Níveis esperados no GPIO5 com saída em coletor aberto:
+
+| Saída do YF-S201 | Tensão no GPIO5 | Leitura |
+|---|---|---|
+| Aberta (não conduz) | 3,3 V, pelo pull-up | Alto |
+| Conduzindo para o GND | `3,3 V × 1 / (1 + 2,2)` ≈ 1,03 V | Baixo, sem margem* |
+
+\* O ESP32 só garante leitura de nível baixo abaixo de `0,25 × 3,3 V` ≈ 0,83 V. Com 1,03 V o pino está na faixa
+indefinida: na prática costuma ser lido como baixo, mas fica sensível a ruído e pode perder pulsos. Trocar o 1 kΩ
+(D2–D6) por um jumper leva o nível baixo para perto de 0 V.
+
+Se a saída do seu YF-S201 fornecer 5 V ativamente (em vez de coletor aberto), o nível alto subiria para ≈ 4,5 V
+(`(5/1 + 3,3/2,2) / (1/1 + 1/2,2)`), acima dos 3,6 V máximos da entrada do ESP32; nesse caso o divisor para o terra
+seria o correto. Para confirmar, meça a tensão no D5 com um multímetro girando o rotor devagar: ela deve alternar
+entre cerca de 3,3 V e um valor baixo, sem nunca passar de 3,3 V.
+
+**Eco do JSN-SR04M-2: divisor de tensão.** O eco (A24 → D24) sai em 5 V, passa por 1 kΩ em série (D13–D24) e por
+2,2 kΩ para o terra (C13), e o ESP32 lê no ponto central:
 
 ```
 Vsaída = 5 V × 2,2 kΩ / (1 kΩ + 2,2 kΩ) ≈ 3,44 V
 ```
 
-Esse valor fica ligeiramente acima de 3,3 V, mas dentro do que as entradas do ESP32 costumam tolerar. Se quiser 3,3 V exatos, a combinação 1 kΩ + 2 kΩ daria 3,33 V.
+Esse valor fica ligeiramente acima de 3,3 V, mas abaixo do máximo de 3,6 V das entradas do ESP32. Com 1 kΩ + 2 kΩ seriam 3,33 V.
 
 ## Nós elétricos resultantes
 
@@ -66,14 +87,14 @@ Resultado de `python3 verificar_conexoes.py`, que aplica todas as conexões acim
 
 | Nó | Pinos ligados |
 |---|---|
-| GND (trilho −) | ESP32 GND, OLED GND, JSN GND, YF-S201 preto, catodos dos 3 LEDs, 2 × 2,2 kΩ |
+| GND (trilho −) | ESP32 GND, OLED GND, JSN GND, YF-S201 preto, catodos dos 3 LEDs, 2,2 kΩ do divisor do eco |
 | 5 V (trilho +) | ESP32 VIN, JSN 5V, YF-S201 vermelho |
-| 3,3 V (coluna 27, F–J) | ESP32 3V3, OLED VDD |
+| 3,3 V (colunas 1 e 27, F–J) | ESP32 3V3, OLED VDD, 2,2 kΩ do pull-up do YF-S201 (G1) |
 | I2C SCL (coluna 26, F–J) | ESP32 D22, OLED SCK |
 | I2C SDA (coluna 25, F–J) | ESP32 D23, OLED SDA |
 | Trigger (coluna 23, A–E) | ESP32 D2, JSN RX |
 | Eco, ponto central (coluna 13, A–E) | ESP32 D4, 1 kΩ (D13) vindo do JSN TX, 2,2 kΩ para o trilho − |
-| Vazão, ponto central (coluna 6, A–E) | ESP32 D5, 1 kΩ (D6) vindo do YF-S201, 2,2 kΩ para o trilho − |
+| Vazão (coluna 6, A–E) | ESP32 D5, 1 kΩ (D6) vindo do YF-S201, 2,2 kΩ (E6) para o 3V3 |
 
 Os pinos D15, RX2, TX2, RX0 e TX0 do ESP32 ficam sem ligação. D18, D19 e D21 só têm o resistor de 1 kΩ do LED correspondente.
 
@@ -90,10 +111,10 @@ Comparação entre a montagem e `../src/main.cpp`:
 | LED verde | 18 | 18 (C9–H9) | Confere, se o LED 1 for verde |
 | LED amarelo | 19 | 19 (C10–H10) | Confere, se o LED 2 for amarelo |
 | LED vermelho | 21 | 21 (C11–H11) | Confere, se o LED 3 for vermelho |
-| YF-S201 (`FLUXO_PIN`) | 5 | 5 (I8 → E6, via divisor) | Confere |
+| YF-S201 (`FLUXO_PIN`) | 5 | 5 (I8 → E6, via 1 kΩ, com pull-up de 2,2 kΩ ao 3V3) | Confere |
 
 O próprio `verificar_conexoes.py` faz essa conferência: ele lê os `#define` de pinos em `../src/main.cpp` e testa cada
-um contra os nós da montagem (ligação direta, ou através do resistor de 1 kΩ no caso dos divisores e dos LEDs).
+um contra os nós da montagem (ligação direta, ou através do resistor de 1 kΩ no caso do eco, do YF-S201 e dos LEDs; o pull-up de 2,2 kΩ do YF-S201 ao 3V3 também é conferido).
 Resultado atual: **todas as ligações conferem**. Se uma conexão da protoboard ou um pino do firmware mudar, rode o script
 de novo e atualize a lista de jumpers em `verificar_conexoes.py` e `gerar_diagrama.py`.
 

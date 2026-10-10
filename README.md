@@ -37,6 +37,7 @@ Detalhes, tabelas, pontos de atenção e procedimento de calibração:
 
 * Placa: ESP32 DevKit V1 (`esp32dev`), framework Arduino, monitor serial a 115200 baud.
 * Bibliotecas: Adafruit GFX Library e Adafruit SSD1306 (instaladas pelo PlatformIO).
+* Compilação verificada: RAM 6,9% e Flash 23,1% ([registro da etapa 2](docs/validacao.md#etapa-2-compilação-do-firmware-físico)).
 
 ```bash
 cd projeto-fisico-sensor-rios
@@ -59,7 +60,8 @@ Os pinos conferem com a montagem na protoboard; a verificação é feita por
 
 Projeto online: <https://wokwi.com/projects/476706772789091329>
 
-Na simulação, o HC-SR04 representa o JSN-SR04M-2 e um botão representa os pulsos do YF-S201. Os parâmetros diferem
+Na simulação, o HC-SR04 representa o JSN-SR04M-2 e um botão representa os pulsos do YF-S201. A simulação foi
+validada (nível, estado, LEDs, vazão e OLED): veja o [registro da etapa 3](docs/validacao.md#etapa-3-simulação-no-wokwi). Os parâmetros diferem
 do físico (referência de 100 cm para o nível e janela de 10 s para a vazão); a comparação está na
 [seção 7 da análise de cálculos](modelo-calibracao/analise-calculos-sensores.md#7-diferenças-em-relação-à-simulação-wokwi).
 
@@ -73,13 +75,14 @@ Lista completa: [`hardware/lista-de-materiais.md`](hardware/lista-de-materiais.m
 
 ## Documentação do protótipo anterior (v0.1.0)
 
-A pasta [`docs/`](docs/) descreve o primeiro protótipo, que media apenas a vazão (YF-S201 + OLED + um LED, simulado com
-potenciômetro no GPIO27). Esses documentos ainda **não foram atualizados** para o sensor de rios e podem citar pinos e
-arquivos que não existem mais na raiz:
+O registro de validação, [`docs/validacao.md`](docs/validacao.md), já inclui as etapas 2 e 3 do sensor de rios, com as
+capturas em `docs/imagens/`. Os demais documentos de [`docs/`](docs/) descrevem o primeiro protótipo, que media apenas a
+vazão (YF-S201 + OLED + um LED, simulado com potenciômetro no GPIO27), e ainda **não foram atualizados**; eles podem citar
+pinos e arquivos que não existem mais na raiz:
 
 * [`docs/readme-v0.1.0-fluxo.md`](docs/readme-v0.1.0-fluxo.md): README anterior, arquivado
 * [`docs/documentacao-completa.md`](docs/documentacao-completa.md), [`docs/decisoes.md`](docs/decisoes.md),
-  [`docs/calibracao.md`](docs/calibracao.md), [`docs/validacao.md`](docs/validacao.md)
+  [`docs/calibracao.md`](docs/calibracao.md)
 
 ## Limitações atuais
 

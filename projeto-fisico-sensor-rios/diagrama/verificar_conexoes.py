@@ -29,7 +29,7 @@ for a,b in jumpers: union(hole(a),hole(b))
 esp_vin = "ESP:VIN"; union(esp_vin,"POS")
 # LEDs: catodo no trilho negativo
 # ---- resistores (dois terminais, NÃO unem os nós) -------------------------
-res = [("2k2","NEG","C6"),("2k2","NEG","C13"),("1k","D2","D6"),("1k","C9","H9"),
+res = [("2k2","E6","G1"),("2k2","NEG","C13"),("1k","D2","D6"),("1k","C9","H9"),
        ("1k","C10","H10"),("1k","C11","H11"),("1k","D13","D24")]
 
 def net_of(ref): return find(hole(ref))
@@ -68,7 +68,8 @@ def conferir_firmware(caminho_main):
         ("OLED_SCL",     lambda n: esp_net(n) == pins["OLED.SCK"],           "ligação direta ao SCK do OLED"),
         ("JSN_RX",       lambda n: esp_net(n) == pins["JSN.RX"],             "ligação direta ao RX (trigger) do JSN"),
         ("JSN_TX",       lambda n: via_res(esp_net(n), "JSN.TX"),            "via 1 kΩ do divisor ao TX (eco) do JSN"),
-        ("FLUXO_PIN",    lambda n: via_res(esp_net(n), "YF-S201.AMARELO"),   "via 1 kΩ do divisor ao fio amarelo do YF-S201"),
+        ("FLUXO_PIN",    lambda n: via_res(esp_net(n), "YF-S201.AMARELO"),   "via 1 kΩ em série ao fio amarelo do YF-S201"),
+        ("FLUXO_PIN",    lambda n: via_res(esp_net(n), "ESP32.3V3"),         "pull-up de 2,2 kΩ ao 3V3"),
         ("LED_VERDE",    lambda n: via_res(esp_net(n), "LED1.anodo"),        "via 1 kΩ ao LED 1"),
         ("LED_AMARELO",  lambda n: via_res(esp_net(n), "LED2.anodo"),        "via 1 kΩ ao LED 2"),
         ("LED_VERMELHO", lambda n: via_res(esp_net(n), "LED3.anodo"),        "via 1 kΩ ao LED 3"),

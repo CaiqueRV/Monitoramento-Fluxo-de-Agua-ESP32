@@ -119,8 +119,8 @@ attachInterrupt(digitalPinToInterrupt(FLUXO_PIN), contarPulso, RISING);   // GPI
 void IRAM_ATTR contarPulso() { pulsos++; }
 ```
 
-Cada borda de subida do sinal incrementa `pulsos`. Na protoboard, o sinal chega ao GPIO 5 pelo divisor de tensão
-(jumper `I8 → E6`). A cada `TEMPO_VAZAO` (2 s) o valor é copiado e zerado
+Cada borda de subida do sinal incrementa `pulsos`. Na protoboard, o sinal chega ao GPIO 5 por um resistor de 1 kΩ em
+série, com pull-up de 2,2 kΩ ao 3V3 (jumper `I8 → E6`, resistor `E6 → G1`). A cada `TEMPO_VAZAO` (2 s) o valor é copiado e zerado
 dentro de uma seção crítica (`noInterrupts()` / `interrupts()`), evitando perder ou contar pulso duas vezes.
 
 ### 4.2 Pulsos → vazão
@@ -167,10 +167,13 @@ Observações sobre o código atual, para decidir na calibração. Nenhuma foi a
 7. **Pinos de boot do ESP32.** `JSN_RX` (GPIO 2) e `FLUXO_PIN` (GPIO 5) são pinos de *strapping*; costumam funcionar,
    mas sinais externos podem interferir no boot/gravação se estiverem ativos nesse momento.
 8. **Níveis lógicos.** YF-S201 e JSN-SR04M-2 respondem com 5 V, enquanto o ESP32 aceita 3,3 V nas entradas.
-   Na protoboard, o sinal do YF-S201 e o eco do JSN-SR04M-2 passam cada um por um divisor de 1 kΩ (em série) e 2,2 kΩ
-   (para o terra): `5 V × 2,2 / (1 + 2,2) ≈ 3,44 V`. Isso fica um pouco acima de 3,3 V; com 1 kΩ + 2 kΩ seriam 3,33 V.
-   Como o firmware usa `INPUT_PULLUP` em `FLUXO_PIN`, há também um pull-up interno (dezenas de kΩ) em paralelo ao divisor;
-   o efeito é pequeno, mas existe.
+   Na protoboard, o eco do JSN-SR04M-2 passa por um divisor de 1 kΩ (em série) e 2,2 kΩ (para o terra):
+   `5 V × 2,2 / (1 + 2,2) ≈ 3,44 V`, um pouco acima de 3,3 V (com 1 kΩ + 2 kΩ seriam 3,33 V).
+   O sinal do YF-S201 usa 1 kΩ em série e pull-up de 2,2 kΩ ao 3V3, ligação indicada para saída em coletor aberto.
+   Nesse caso o nível baixo fica em ≈ 1,03 V (`3,3 × 1 / (1 + 2,2)`), acima do limite garantido de 0,83 V do ESP32:
+   costuma funcionar, mas sem margem contra ruído. O `INPUT_PULLUP` do firmware (dezenas de kΩ) fica em paralelo ao
+   pull-up externo e quase não muda os níveis. Detalhes e como medir em
+   [`conexoes-protoboard.md`](../projeto-fisico-sensor-rios/diagrama/conexoes-protoboard.md#resistores-5--1-kω-e-2--22-kω).
 
 ### Efeito da temperatura na velocidade do som
 

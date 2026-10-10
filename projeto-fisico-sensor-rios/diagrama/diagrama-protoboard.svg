@@ -577,16 +577,6 @@
 <circle cx="360" cy="501" r="3.5" fill="#555" stroke="#222" stroke-width="1"/>
 <circle cx="360" cy="337" r="3.5" fill="#555" stroke="#222" stroke-width="1"/>
 <text x="378" y="326" font-family="DejaVu Sans, Arial, sans-serif" font-size="10" text-anchor="start" font-weight="bold" fill="#222" stroke="#fff" stroke-width="3" paint-order="stroke">1 kΩ × 3</text>
-<path d="M230.0,501.0 L230.0,556.0 L256.0,576.0 L256.0,608.0" fill="none" stroke="#8a8a8a" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
-<g transform="translate(230,528) rotate(90)">
-<rect x="-17" y="-6.5" width="34" height="13" rx="6" fill="#e8d3a4" stroke="#8a6d3b" stroke-width="1.2"/>
-<rect x="-10" y="-6.5" width="3.4" height="13" fill="#c1272d"/>
-<rect x="-2" y="-6.5" width="3.4" height="13" fill="#c1272d"/>
-<rect x="6" y="-6.5" width="3.4" height="13" fill="#c1272d"/>
-<rect x="11" y="-6.5" width="3" height="13" fill="#d4af37"/>
-</g>
-<circle cx="230" cy="501" r="3.5" fill="#555" stroke="#222" stroke-width="1"/>
-<circle cx="256" cy="608" r="3.5" fill="#1f5fbf" stroke="#222" stroke-width="1"/>
 <path d="M412.0,501.0 L412.0,608.0" fill="none" stroke="#8a8a8a" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"/>
 <g transform="translate(412,548) rotate(90)">
 <rect x="-17" y="-6.5" width="34" height="13" rx="6" fill="#e8d3a4" stroke="#8a6d3b" stroke-width="1.2"/>
@@ -597,7 +587,6 @@
 </g>
 <circle cx="412" cy="501" r="3.5" fill="#555" stroke="#222" stroke-width="1"/>
 <circle cx="412" cy="608" r="3.5" fill="#1f5fbf" stroke="#222" stroke-width="1"/>
-<text x="210" y="558" font-family="DejaVu Sans, Arial, sans-serif" font-size="10" text-anchor="end" font-weight="bold" fill="#222" stroke="#fff" stroke-width="3" paint-order="stroke">2,2 kΩ</text>
 <text x="430" y="556" font-family="DejaVu Sans, Arial, sans-serif" font-size="10" text-anchor="start" font-weight="bold" fill="#222" stroke="#fff" stroke-width="3" paint-order="stroke">2,2 kΩ</text>
 <path d="M100.0,311.0 L100.0,415.0 L776.0,415.0 L776.0,389.0" fill="none" stroke="#fff" stroke-width="6.2" stroke-linejoin="round" stroke-linecap="round"/>
 <path d="M100.0,311.0 L100.0,415.0 L776.0,415.0 L776.0,389.0" fill="none" stroke="#ef7d00" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/>
@@ -643,6 +632,18 @@
 <path d="M78.0,205.0 L22.0,205.0 L22.0,634.0 L100.0,634.0" fill="none" stroke="#d62828" stroke-width="3.2" stroke-linejoin="round" stroke-linecap="round"/>
 <circle cx="78" cy="205" r="4.2" fill="#d62828" stroke="#222" stroke-width="1"/>
 <circle cx="100" cy="634" r="4.2" fill="#d62828" stroke="#222" stroke-width="1"/>
+<path d="M230.0,449.0 L100.0,363.0" fill="none" stroke="#fff" stroke-width="5.2" stroke-linejoin="round" stroke-linecap="round"/>
+<path d="M230.0,449.0 L100.0,363.0" fill="none" stroke="#8a8a8a" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"/>
+<g transform="translate(165.0,406.0) rotate(33.486168815513)">
+<rect x="-17" y="-6.5" width="34" height="13" rx="6" fill="#e8d3a4" stroke="#8a6d3b" stroke-width="1.2"/>
+<rect x="-10" y="-6.5" width="3.4" height="13" fill="#c1272d"/>
+<rect x="-2" y="-6.5" width="3.4" height="13" fill="#c1272d"/>
+<rect x="6" y="-6.5" width="3.4" height="13" fill="#c1272d"/>
+<rect x="11" y="-6.5" width="3" height="13" fill="#d4af37"/>
+</g>
+<circle cx="230" cy="449" r="4.2" fill="#7b1fa2" stroke="#222" stroke-width="1"/>
+<circle cx="100" cy="363" r="3.5" fill="#ef7d00" stroke="#222" stroke-width="1"/>
+<text x="185.0" y="394.0" font-family="DejaVu Sans, Arial, sans-serif" font-size="10" text-anchor="start" font-weight="bold" fill="#222" stroke="#fff" stroke-width="3" paint-order="stroke">2,2 kΩ</text>
 <text x="98" y="300" font-family="DejaVu Sans, Arial, sans-serif" font-size="8" text-anchor="middle" font-weight="normal" fill="#222"></text>
 <rect x="120" y="735" width="220" height="80" rx="10" fill="#1d4f91" stroke="#0e2a50" stroke-width="2"/>
 <rect x="98" y="757" width="30" height="36" rx="4" fill="#163c70"/>
@@ -665,13 +666,13 @@
 <text x="152" y="749" font-family="DejaVu Sans, Arial, sans-serif" font-size="8" text-anchor="middle" font-weight="normal" fill="#fff">verm.</text>
 <text x="170" y="749" font-family="DejaVu Sans, Arial, sans-serif" font-size="8" text-anchor="middle" font-weight="normal" fill="#fff">amar.</text>
 <text x="200" y="749" font-family="DejaVu Sans, Arial, sans-serif" font-size="8" text-anchor="middle" font-weight="normal" fill="#fff">preto</text>
-<text x="86" y="525" font-family="DejaVu Sans, Arial, sans-serif" font-size="10" text-anchor="start" font-weight="normal" fill="#7b1fa2" stroke="#fff" stroke-width="3" paint-order="stroke">divisor YF-S201:</text>
-<text x="86" y="538" font-family="DejaVu Sans, Arial, sans-serif" font-size="10" text-anchor="start" font-weight="normal" fill="#7b1fa2" stroke="#fff" stroke-width="3" paint-order="stroke">→ GPIO5 (≈ 3,4 V)</text>
+<text x="86" y="525" font-family="DejaVu Sans, Arial, sans-serif" font-size="10" text-anchor="start" font-weight="normal" fill="#7b1fa2" stroke="#fff" stroke-width="3" paint-order="stroke">YF-S201: 1 kΩ em série +</text>
+<text x="86" y="538" font-family="DejaVu Sans, Arial, sans-serif" font-size="10" text-anchor="start" font-weight="normal" fill="#7b1fa2" stroke="#fff" stroke-width="3" paint-order="stroke">pull-up 2,2 kΩ ao 3V3 → GPIO5</text>
 <text x="442" y="513" font-family="DejaVu Sans, Arial, sans-serif" font-size="10" text-anchor="start" font-weight="normal" fill="#00838f" stroke="#fff" stroke-width="3" paint-order="stroke">divisor eco JSN:</text>
 <text x="442" y="526" font-family="DejaVu Sans, Arial, sans-serif" font-size="10" text-anchor="start" font-weight="normal" fill="#00838f" stroke="#fff" stroke-width="3" paint-order="stroke">→ GPIO4 (≈ 3,4 V)</text>
 <rect x="370" y="735" width="570" height="118" rx="8" fill="#ecf8ee" stroke="#2e7d32" stroke-width="1.8"/>
 <text x="386" y="757" font-family="DejaVu Sans, Arial, sans-serif" font-size="13" text-anchor="start" font-weight="bold" fill="#1b5e20">✓ Montagem conferida com o firmware (src/main.cpp)</text>
-<text x="386" y="777" font-family="DejaVu Sans, Arial, sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#1b3d1f">• YF-S201 → divisor → GPIO5 (FLUXO_PIN 5), jumper I8 → E6.</text>
+<text x="386" y="777" font-family="DejaVu Sans, Arial, sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#1b3d1f">• YF-S201 → 1 kΩ → GPIO5 (FLUXO_PIN 5, I8 → E6) · pull-up 2,2 kΩ ao 3V3 (E6–G1).</text>
 <text x="386" y="794" font-family="DejaVu Sans, Arial, sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#1b3d1f">• JSN-SR04M-2: trigger GPIO2 (I4 → B23) · eco → divisor → GPIO4 (I5 → E13).</text>
 <text x="386" y="811" font-family="DejaVu Sans, Arial, sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#1b3d1f">• OLED I2C: SDA GPIO23 (I15 → F25) · SCL GPIO22 (I14 → F26) · VDD 3V3.</text>
 <text x="386" y="828" font-family="DejaVu Sans, Arial, sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#1b3d1f">• LEDs via 1 kΩ: GPIO18, GPIO19 e GPIO21.</text>
@@ -694,6 +695,6 @@
 <text x="454" y="922" font-family="DejaVu Sans, Arial, sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#222">GPIO23 (SDA)</text>
 <rect x="600" y="915" width="26" height="6" rx="3" fill="#e0a800" stroke="#222" stroke-width=".6"/>
 <text x="634" y="922" font-family="DejaVu Sans, Arial, sans-serif" font-size="11" text-anchor="start" font-weight="normal" fill="#222">fio amarelo do YF-S201</text>
-<text x="60" y="956" font-family="DejaVu Sans, Arial, sans-serif" font-size="10" text-anchor="start" font-weight="normal" fill="#555">Resistores: 5 × 1 kΩ (D2–D6, C9–H9, C10–H10, C11–H11, D13–D24) e 2 × 2,2 kΩ (C6 e C13 ao trilho −). LEDs: catodo no trilho −, anodo em A9, A10 e A11.</text>
+<text x="60" y="956" font-family="DejaVu Sans, Arial, sans-serif" font-size="10" text-anchor="start" font-weight="normal" fill="#555">Resistores: 5 × 1 kΩ (D2–D6, C9–H9, C10–H10, C11–H11, D13–D24) e 2 × 2,2 kΩ (E6–G1, pull-up ao 3V3; C13 ao trilho −). LEDs: catodo no trilho −, anodo em A9, A10 e A11.</text>
 <text x="60" y="972" font-family="DejaVu Sans, Arial, sans-serif" font-size="10" text-anchor="start" font-weight="normal" fill="#555">Alimentação: VIN do ESP32 (5 V do USB) → trilho +. O OLED usa 3V3 (I1 → F27).</text>
 </svg>

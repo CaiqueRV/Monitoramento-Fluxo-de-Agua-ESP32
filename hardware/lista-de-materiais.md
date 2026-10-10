@@ -14,24 +14,25 @@ Atualizada em 09/10/2026.
 | 6 | LED vermelho | 1 | Status PERIGO |
 | 7 | LED amarelo | 1 | Status ATENÇÃO |
 | 8 | LED verde | 1 | Status NORMAL |
-| 9 | Resistor de 1 kΩ | 5 | 3 em série com os LEDs e 2 como parte de cima dos divisores de tensão |
-| 10 | Resistor de 2,2 kΩ | 2 | Parte de baixo (para o terra) dos divisores de tensão |
+| 9 | Resistor de 1 kΩ | 5 | 3 em série com os LEDs, 1 em série no sinal do YF-S201 e 1 no divisor do eco do JSN-SR04M-2 |
+| 10 | Resistor de 2,2 kΩ | 2 | 1 pull-up do sinal do YF-S201 ao 3V3 e 1 no divisor do eco (para o terra) |
 | 11 | Jumpers | 11 | Ligações entre ESP32, display, sensores e trilhos (lista completa abaixo) |
 
 ## Uso dos resistores
 
 | Resistor | Entre | Função |
 |---|---|---|
-| 1 kΩ | D2 e D6 | Série no sinal do YF-S201 (divisor) |
-| 2,2 kΩ | C6 e trilho − | Terra do divisor do YF-S201 |
+| 1 kΩ | D2 e D6 | Série no sinal do YF-S201 |
+| 2,2 kΩ | E6 e G1 | Pull-up do sinal do YF-S201 ao 3V3 |
 | 1 kΩ | D13 e D24 | Série no eco do JSN-SR04M-2 (divisor) |
 | 2,2 kΩ | C13 e trilho − | Terra do divisor do eco |
 | 1 kΩ | C9 e H9 | LED 1 (GPIO18) |
 | 1 kΩ | C10 e H10 | LED 2 (GPIO19) |
 | 1 kΩ | C11 e H11 | LED 3 (GPIO21) |
 
-Os divisores reduzem os 5 V do YF-S201 e do eco do JSN-SR04M-2 para ≈ 3,44 V
-(`5 V × 2,2 / (1 + 2,2)`), compatível com as entradas do ESP32.
+O divisor do eco reduz os 5 V do JSN-SR04M-2 para ≈ 3,44 V (`5 V × 2,2 / (1 + 2,2)`). O sinal do YF-S201 usa
+pull-up ao 3V3, e os níveis de tensão resultantes estão explicados em
+[`conexoes-protoboard.md`](../projeto-fisico-sensor-rios/diagrama/conexoes-protoboard.md#resistores-5--1-kω-e-2--22-kω).
 
 ## Jumpers (11)
 
@@ -51,7 +52,7 @@ Conforme `projeto-fisico-sensor-rios/src/main.cpp`.
 | OLED SSD1306 (I2C, endereço 0x3C) | SCL | 22 |
 | JSN-SR04M-2 | Trigger (`JSN_RX`) | 2 |
 | JSN-SR04M-2 | Eco (`JSN_TX`), via divisor | 4 |
-| YF-S201 | Pulsos (`FLUXO_PIN`), via divisor | 5 |
+| YF-S201 | Pulsos (`FLUXO_PIN`), via 1 kΩ, pull-up de 2,2 kΩ ao 3V3 | 5 |
 | LED verde | Anodo, via 1 kΩ | 18 |
 | LED amarelo | Anodo, via 1 kΩ | 19 |
 | LED vermelho | Anodo, via 1 kΩ | 21 |

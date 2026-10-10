@@ -19,8 +19,8 @@ Branch: `feature/sensor-rios-fisico-e-simulacao`
   - Em leitura inválida do ultrassônico, mantém a última distância e o último nível válidos.
   - A pasta `.pio/` (build e bibliotecas) não foi versionada.
 - `projeto-fisico-sensor-rios/diagrama/`: diagrama das conexões na protoboard de 400 pontos (`diagrama-protoboard.svg` e `.png`),
-  `conexoes-protoboard.md` (posição dos componentes, 11 jumpers, 7 resistores, divisores de tensão, nós elétricos e conferência com o firmware),
-  `gerar_diagrama.py` (gera o SVG) e `verificar_conexoes.py` (monta os nós elétricos a partir da lista de conexões e confere cada pino definido em `src/main.cpp`; todas as ligações conferem, com o sinal do YF-S201 no GPIO 5 pelo jumper `I8 → E6`).
+  `conexoes-protoboard.md` (posição dos componentes, 11 jumpers, 7 resistores, pull-up do YF-S201 e divisor do eco com os níveis de tensão, nós elétricos e conferência com o firmware),
+  `gerar_diagrama.py` (gera o SVG) e `verificar_conexoes.py` (monta os nós elétricos a partir da lista de conexões e confere cada pino definido em `src/main.cpp`, incluindo o pull-up do YF-S201; todas as ligações conferem, com o sinal do YF-S201 no GPIO 5 pelo jumper `I8 → E6`).
 - `simulacao-wokwi/`: `sketch.ino`, `diagram.json` e `libraries.txt` do projeto <https://wokwi.com/projects/476706772789091329>, com README.
   - `sketch.ino`: HC-SR04 no lugar do JSN-SR04M (TRIG = 32, ECHO = 34), botão no lugar do YF-S201 (GPIO 33, borda `FALLING`), LEDs em 25/26/27, OLED em SDA 21 / SCL 22.
   - Nível em % com referência de 100 cm; vazão com janela de 10 s e `frequência / 7,5`.
@@ -31,6 +31,9 @@ Branch: `feature/sensor-rios-fisico-e-simulacao`
 
 #### Alterado
 - `hardware/lista-de-materiais.md` (estava vazio) preenchida: ESP32 DEVKIT V1, protoboard de 400 pontos, YF-S201, JSN-SR04M-2, OLED SSD1306 de 0,96" I2C, LED vermelho, LED amarelo, LED verde, 5 resistores de 1 kΩ, 2 resistores de 2,2 kΩ e 11 jumpers, com uso de cada resistor, lista de jumpers, tabela de pinos e alimentação.
+- Sinal do YF-S201 na protoboard: o resistor de 2,2 kΩ passou a ligar `E6` a `G1` (pull-up ao 3V3), no lugar de `C6` ao trilho negativo. A ligação deixou de ser um divisor de tensão e virou 1 kΩ em série + pull-up de 2,2 kΩ; diagrama, verificador, conexões, lista de materiais e análise de cálculos atualizados, com os níveis de tensão esperados no GPIO 5.
+- `docs/imagens/etapa-2-compilacao.png` e `docs/imagens/etapa-3-simulacao.png` substituídas pelas capturas do sensor de rios (compilação do firmware físico e simulação no Wokwi).
+- `docs/validacao.md`: registradas as etapas 2 (compilação: RAM 6,9%, Flash 23,1%) e 3 (simulação: 53,44 cm → 46,56%, ATENCAO, LED amarelo, 20,95 L/min) do sensor de rios; os registros do protótipo v0.1.0 foram mantidos, sem as capturas antigas.
 - `.github/workflows/build.yml`: a compilação passou a usar `pio run -d projeto-fisico-sensor-rios`, já que o `platformio.ini` deixou de ficar na raiz.
 - Badge de compilação do README apontado para o repositório atual (`CaiqueRV/Monitoramento-Fluxo-de-Agua-ESP32`); o anterior apontava para outro endereço.
 
@@ -40,7 +43,8 @@ Branch: `feature/sensor-rios-fisico-e-simulacao`
 
 #### Pendências e pontos de atenção
 - As cores dos LEDs no diagrama (1 verde, 2 amarelo, 3 vermelho) foram assumidas a partir dos pinos do firmware.
-- Os documentos em `docs/` ainda descrevem o protótipo v0.1.0 e não foram atualizados.
+- Com exceção de `docs/validacao.md`, os documentos em `docs/` ainda descrevem o protótipo v0.1.0 e não foram atualizados.
+- Com o pull-up, o nível baixo no GPIO 5 fica em ≈ 1,03 V (sem margem em relação ao limite de 0,83 V do ESP32) se a saída do YF-S201 for em coletor aberto; medir a tensão no D5 para confirmar o tipo de saída. Trocar o 1 kΩ (D2–D6) por um jumper daria mais margem.
 - Pontos de atenção do firmware registrados na análise de cálculos e não corrigidos: resolução de 10 % por cm, nível de 100 % só em exatamente 20,0 cm, efeito da temperatura, estado inicial NORMAL sem leitura e fronteira de 66 % diferente entre físico e simulação.
 - Este changelog descreve o conteúdo das versões atuais; não foi feita comparação linha a linha com o firmware físico anterior, que não estava no repositório.
 
